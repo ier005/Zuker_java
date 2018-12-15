@@ -7,6 +7,8 @@ package com.workshop.zukerjava.controller;
 
 import com.workshop.zukerjava.bean.User;
 import com.workshop.zukerjava.service.UserService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -62,19 +64,19 @@ public class LoginController {
     }
 
     //dashboard界面
-    /*
+
     @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
     public ModelAndView dashboard() {
         ModelAndView modelAndView = new ModelAndView();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByEmail(auth.getName());
+        User user = userService.findUserByUsername(auth.getName());
         modelAndView.addObject("currentUser", user);
         modelAndView.addObject("nickname", "Welcome " + user.getUsername());
         modelAndView.addObject("adminMessage", "Content Available Only for Users with Admin Role");
         modelAndView.setViewName("dashboard");
         return modelAndView;
     }
-    */
+
 
     @RequestMapping(value = {"/","/home"}, method = RequestMethod.GET)
     public ModelAndView home() {
