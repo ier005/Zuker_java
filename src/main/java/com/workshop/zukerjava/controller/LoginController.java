@@ -6,15 +6,14 @@
 package com.workshop.zukerjava.controller;
 
 import com.workshop.zukerjava.bean.User;
+import com.workshop.zukerjava.pojo.LoginRequest;
+import com.workshop.zukerjava.pojo.LoginResponse;
+import com.workshop.zukerjava.service.ExceptionService;
 import com.workshop.zukerjava.service.UserService;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.*;
+
 
 import javax.validation.Valid;
 
@@ -22,67 +21,38 @@ import javax.validation.Valid;
 @Controller
 public class LoginController {
 
-    @Autowired
     private UserService userService;
+    private ExceptionService exceptionService;
 
-    @RequestMapping(value = "/zuker/user/login", method = RequestMethod.GET)
-    public ModelAndView login() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("login");
-        return modelAndView;
+    @Autowired
+    public LoginController(UserService userService, ExceptionService exceptionService) {
+        this.userService = userService;
+        this.exceptionService = exceptionService;
     }
 
-    @RequestMapping(value = "/zuker/user/register", method = RequestMethod.GET)
-    public ModelAndView register() {
-        ModelAndView modelAndView = new ModelAndView();
-        User user = new User();
-        modelAndView.addObject("user", user);
-        modelAndView.setViewName("register");
-        return modelAndView;
+    @PostMapping("/zuker/user/register")
+    public User registerUser(@Valid @RequestBody User user) {
+
+        return userService.registerUser(user);
     }
 
-    @RequestMapping(value = "/zuker/user/register", method = RequestMethod.POST)
-    public ModelAndView createNewUser(@Valid User user, BindingResult bindingResult) {
-        ModelAndView modelAndView = new ModelAndView();
-        //用email判断用户存在与否
-        User userExists = userService.findUserByUsername(user.getUsername());
-        if (userExists != null) {
-            bindingResult
-                    .rejectValue("username", "error.user",
-                            "已有同名用户! There is already a user registered with the username provided");
-        }
-        if (bindingResult.hasErrors()) {
-            modelAndView.setViewName("register");
-        } else {
-            userService.saveUser(user);
-            modelAndView.addObject("successMessage", "User has been registered successfully");
-            modelAndView.addObject("user", new User());
-            modelAndView.setViewName("login");
+    @PostMapping("/zuker/user/login")
+    public LoginResponse loginUser(@Valid @RequestBody LoginRequest loginRequest) {
 
-        }
-        return modelAndView;
+        return userService.loginUser(loginRequest);
     }
 
-    //dashboard界面
+    @GetMapping("/verifyToken")
+    public Long verifyToken(@RequestParam("token")  String token) {
 
-    @RequestMapping(value = "/dashboard", method = RequestMethod.GET)
-    public ModelAndView dashboard() {
-        ModelAndView modelAndView = new ModelAndView();
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.findUserByUsername(auth.getName());
-        modelAndView.addObject("currentUser", user);
-        modelAndView.addObject("nickname", "Welcome " + user.getUsername());
-        modelAndView.addObject("adminMessage", "Content Available Only for Users with Admin Role");
-        modelAndView.setViewName("dashboard");
-        return modelAndView;
+        return userService.verifyToken(token);
     }
 
-
-    @RequestMapping(value = {"/","/home"}, method = RequestMethod.GET)
-    public ModelAndView home() {
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("home");
-        return modelAndView;
+    @RequestMapping(value = "/zuker/profile/getProfile", method = RequestMethod.GET)
+    public String getProfile(@RequestParam("user_id") String user_id) {
+        List<HousingInfo> housingInfos = MongoUtils.getHousingInfoList(user_id);
+        JSONArray array = new JSONArray();
+        array.addAll(housingInfos);
+        return array.toJSONString();
     }
-
 }
