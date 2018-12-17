@@ -1,13 +1,17 @@
 package com.workshop.zukerjava.bean;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import javax.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * 用户个人信息java bean
  */
 
 @Entity
-@Table(name = "users")
+@Document(collection = "user")
 public class User{
     //user_id
     @Id
@@ -15,17 +19,17 @@ public class User{
     private String user_id;
     //@Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
 
-    @Column(name = "username")
+    @Field("username")
     private String username;
 
-    @Column(name = "password")
+    @Field("password")
     private String password;
 
-    @Column(name = "email")
+    @Field("email")
     private String email; //为了找回密码，加上邮箱
 
-    @Column(name = "avatarPath")
-    private String avatarPath; //上传头像：图像路径
+    @Field("avatarPath")
+    private List<String> avatarPath = new ArrayList<>(); //上传头像：图像路径
 
     //@Id
     //@GeneratedValue(strategy= GenerationType.AUTO)
@@ -61,11 +65,11 @@ public class User{
         this.email = email;
     }
 
-    public String getAvatarPath() {
+    public List<String> getAvatarPath() {
         return avatarPath;
     }
 
-    public void setAvatarPath(String avatarPath) {
+    public void setAvatarPath(List<String> avatarPath) {
         this.avatarPath = avatarPath;
     }
 
