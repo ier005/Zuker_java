@@ -72,10 +72,5 @@ public class User{
     public void setAvatarPath(List<String> avatarPath) {
         this.avatarPath = avatarPath;
     }
-
-    @Override
-    public String toString() {
-        return "User [id=" + user_id + ", username=" + username + ", password="
-                + password + ", avatarPath=" + avatarPath + "]";
-    }
+    
 }
