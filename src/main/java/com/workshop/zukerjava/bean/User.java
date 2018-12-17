@@ -1,39 +1,34 @@
 package com.workshop.zukerjava.bean;
 
-import org.springframework.data.mongodb.core.index.IndexDirection;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.Set;
 
 /**
  * 用户个人信息java bean
  */
 
 @Entity
-@Document(collection = "user")
-public class User implements Serializable {
-
+@Table(name = "users")
+public class User{
+    //user_id
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String user_id;
-    @Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
+    //@Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
 
+    @Column(name = "username")
     private String username;
 
+    @Column(name = "password")
     private String password;
 
+    @Column(name = "email")
     private String email; //为了找回密码，加上邮箱
 
+    @Column(name = "avatarPath")
     private String avatarPath; //上传头像：图像路径
 
-    @DBRef
-    private Set<Role> roles;
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.AUTO)
+    //@Id
+    //@GeneratedValue(strategy= GenerationType.AUTO)
     public String getUser_id() {
         return user_id;
     }
@@ -73,16 +68,6 @@ public class User implements Serializable {
     public void setAvatarPath(String avatarPath) {
         this.avatarPath = avatarPath;
     }
-    @OneToMany(targetEntity=Role.class, mappedBy="role",
-            fetch=FetchType.EAGER)
-    public Set<Role> getRoles() {
-        return roles;
-    }
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
-
-    //参考https://github.com/shuangbofu/ustate/
 
     @Override
     public String toString() {
