@@ -1,58 +1,89 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.workshop.zukerjava.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.workshop.zukerjava.bean.User;
-import com.workshop.zukerjava.pojo.LoginRequest;
-import com.workshop.zukerjava.pojo.LoginResponse;
-import com.workshop.zukerjava.service.ExceptionService;
-import com.workshop.zukerjava.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import com.workshop.zukerjava.util.MongoUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 
-import javax.validation.Valid;
-
-
-@Controller
+@RestController
+@RequestMapping("/login")
 public class LoginController {
 
-    private UserService userService;
-    private ExceptionService exceptionService;
-
-    @Autowired
-    public LoginController(UserService userService, ExceptionService exceptionService) {
-        this.userService = userService;
-        this.exceptionService = exceptionService;
+    @RequestMapping(value = "/login", method = RequestMethod.POST)
+    public String login(@RequestParam("username") String username,
+                        @RequestParam("password")String password) {
+        JSONObject ret = new JSONObject();
+        User user = MongoUtils.findUserByName(username);
+        if (user == null) {
+            return ret.toJSONString();
+        }
+        if (user.getPassword() != password){
+            return ret.toJSONString();
+        }
+        ret.put("user_id", user.getUser_id());
+        //TODO:JWT
+        //ret.put("token", JWT);
+        return ret.toJSONString();
     }
 
-    @PostMapping("/zuker/user/register")
-    public User registerUser(@Valid @RequestBody User user) {
-
-        return userService.registerUser(user);
+    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    public int logout(@RequestParam("user_id") String user_id) {
+        //TODO
+        return 0;
     }
 
-    @PostMapping("/zuker/user/login")
-    public LoginResponse loginUser(@Valid @RequestBody LoginRequest loginRequest) {
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public int register(@RequestParam("email") String email,
+                        @RequestParam("username") String username,
+                        @RequestParam("password") String password,
+                        @RequestParam("avatar_Path") List <String> avatarPath) {
 
-        return userService.loginUser(loginRequest);
+        //TODO
+        User sameName = MongoUtils.findUserByName(username);
+        User sameEmail = MongoUtils.findUser(email);
+        if (sameName == null && sameEmail == null) {
+            User user = new User();
+            user.setUsername(username);
+            user.setEmail(email);
+            user.setPassword(password);
+            user.setAvatarPath(avatarPath);
+            return MongoUtils.register(user);
+        }
+
+        return 0;
     }
 
-    @GetMapping("/verifyToken")
-    public Long verifyToken(@RequestParam("token")  String token) {
+    @RequestMapping(value = "/forget", method = RequestMethod.POST)
+    public int forget(@RequestParam("email") String email,
+                        @RequestParam("username") String username,
+                        @RequestParam("new_password") String newpassword) {
+        //TODO
+        User user = MongoUtils.findUserByName(username);
+        if (user != null) {
+            user.setPassword(newpassword);
+            return MongoUtils.forget(user.getUser_id(),newpassword);
+        }
 
-        return userService.verifyToken(token);
+        return 0;
     }
 
-    @RequestMapping(value = "/zuker/profile/getProfile", method = RequestMethod.GET)
-    public String getProfile(@RequestParam("user_id") String user_id) {
-        List<HousingInfo> housingInfos = MongoUtils.getHousingInfoList(user_id);
-        JSONArray array = new JSONArray();
-        array.addAll(housingInfos);
-        return array.toJSONString();
+    @RequestMapping(value = "/update/password", method = RequestMethod.POST)
+    public int updatePassword(@RequestParam("user_id") String user_id,
+                      @RequestParam("origin_pwd") String pwd,
+                      @RequestParam("new_pwd") String newpwd) {
+        //TODO
+        User user = MongoUtils.findUser(user_id);
+        if (user != null && user.getPassword() == pwd) {
+            user.setPassword(newpwd);
+            return MongoUtils.updatePassword(user_id,newpwd);
+        }
+
+        return 0;
     }
+
 }

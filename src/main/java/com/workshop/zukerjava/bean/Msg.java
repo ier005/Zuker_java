@@ -1,43 +1,88 @@
 package com.workshop.zukerjava.bean;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+
 /**
  * 私信java bean
  */
+@Document(collection = "messages")
 public class Msg {
-    private String msg;
-    private long sendTime;
-    private String fromUser;
-    private String toUser;
+    @Id
+    private String _id;
 
-    public String getMsg() {
-        return msg;
+    @Field("sender_id")
+    private String sender_id;
+
+    @Field("receiver_id")
+    private String receiver_id;
+
+    @Field("sender_name")
+    private String sender_name;
+
+    @Field("receiver_name")
+    private String receiver_name;
+
+    @Field("content")
+    private String content;
+
+    @Field("send_time")
+    private String send_time;
+
+    public String get_id() {
+        return _id;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void set_id(String _id) {
+        this._id = _id;
     }
 
-    public long getSendTime() {
-        return sendTime;
+    public String getSender_id() {
+        return sender_id;
     }
 
-    public void setSendTime(long sendTime) {
-        this.sendTime = sendTime;
+    public void setSender_id(String sender_id) {
+        this.sender_id = sender_id;
     }
 
-    public String getFromUser() {
-        return fromUser;
+    public String getReceiver_id() {
+        return receiver_id;
     }
 
-    public void setFromUser(String fromUser) {
-        this.fromUser = fromUser;
+    public void setReceiver_id(String receiver_id) {
+        this.receiver_id = receiver_id;
     }
 
-    public String getToUser() {
-        return toUser;
+    public String getSender_name() {
+        return sender_name;
     }
 
-    public void setToUser(String toUser) {
-        this.toUser = toUser;
+    public void setSender_name(String sender_name) {
+        this.sender_name = sender_name;
+    }
+
+    public String getReceiver_name() {
+        return receiver_name;
+    }
+
+    public void setReceiver_name(String receiver_name) {
+        this.receiver_name = receiver_name;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getSend_time() {
+        return send_time;
+    }
+
+    public void setSend_time(String send_time) {
+        this.send_time = send_time;
     }
 }
