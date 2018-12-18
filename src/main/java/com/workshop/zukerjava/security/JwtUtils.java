@@ -3,20 +3,35 @@ package com.workshop.zukerjava.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
+import java.util.Base64;
 import java.util.Date;
+import java.util.Random;
 
-public class JwtUtils {
+@Component
+public class JwtUtils implements CommandLineRunner {
+    private static Logger log = LoggerFactory.getLogger(JwtUtils.class);
+
     public static final String TOKEN_PARAM_NAME = "token";
-    public static final String TOKEN_HEADER = "Authorization";
-    public static final String TOKEN_PREFIX = "Authorization";
 
-    private static final String SECRET = "zuker_secret";
     private static final String ISSUER = "issuer";
 
-    private static final long DEFAULT_EXPIRATION = 3600L;   // 1hour
+    private static final long DEFAULT_EXPIRATION = 6 * 3600L;   // 6hours
 
     private static final SignatureAlgorithm ALGORITHM = SignatureAlgorithm.HS512;
+
+    private static final byte[] key = new byte[1024];
+
+
+    public static void generateKey(long seed) {
+        log.info("generate key");
+        Random random = new Random(seed);
+        random.nextBytes(key);
+    }
 
     public static String createToken(String user_id) {
         return createToken(user_id, DEFAULT_EXPIRATION);
@@ -24,7 +39,7 @@ public class JwtUtils {
 
     public static String createToken(String user_id, long expiration) {
         return Jwts.builder()
-                   .signWith(ALGORITHM, SECRET)
+                   .signWith(ALGORITHM, Base64.getEncoder().encode(key))
                    .setIssuer(ISSUER)
                    .setSubject(user_id)
                    .setIssuedAt(new Date())
@@ -32,22 +47,49 @@ public class JwtUtils {
                    .compact();
     }
 
-    public static String getUsername(String token) {
-        return getTokenBody(token).getSubject();
+    public static String getUserId(String token) {
+        Claims claims = getTokenBody(token);
+        if (claims == null) {
+            return null;
+        }
+        return claims.getSubject();
     }
 
     public static boolean isExpiration(String token) {
-        return getTokenBody(token).getExpiration().before(new Date());
+        Claims claims = getTokenBody(token);
+        if (claims == null) {
+            return true;
+        }
+        return claims.getExpiration().before(new Date());
     }
 
     private static Claims getTokenBody(String token) {
-        return Jwts.parser()
-                   .setSigningKey(SECRET)
-                   .parseClaimsJws(token)
-                   .getBody();
+        try {
+            return Jwts.parser()
+                       .setSigningKey(Base64.getEncoder().encode(key))
+                       .parseClaimsJws(token)
+                       .getBody();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static boolean verify(String token) {
+        return getTokenBody(token) != null;
     }
 
     public static String verifyAndGetUserId(String token) {
-        return "";
+        if (!verify(token)) {
+            return null;
+        }
+        if (isExpiration(token)) {
+            return null;
+        }
+        return getUserId(token);
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        generateKey(new Date().getTime());
     }
 }
