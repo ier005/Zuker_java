@@ -57,6 +57,12 @@ public class JwtUtils implements CommandLineRunner {
         return claims.getSubject();
     }
 
+    /**
+     * check if token is expired
+     *
+     * @param token jwt token
+     * @return
+     */
     public static boolean isExpiration(String token) {
         Claims claims = getTokenBody(token);
         if (claims == null) {
@@ -76,18 +82,27 @@ public class JwtUtils implements CommandLineRunner {
         }
     }
 
+    /**
+     * verify if token is valid and not expired
+     *
+     * @param token jwt token
+     * @return @value(true)    token is valid and not expired
+     */
     public static boolean verify(String token) {
-        return getTokenBody(token) != null;
+        return getTokenBody(token) != null && !isExpiration(token);
     }
 
+    /**
+     * verify token, if token is valid and not expired, return user_id
+     *
+     * @param token jwt token
+     * @return user_id @value(null) token is invalid or expired
+     */
     public static String verifyAndGetUserId(String token) {
         if (TEST_MODE) {
             return "tony";
         }
         if (!verify(token)) {
-            return null;
-        }
-        if (isExpiration(token)) {
             return null;
         }
         return getUserId(token);

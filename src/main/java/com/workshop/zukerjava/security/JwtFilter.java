@@ -12,6 +12,9 @@ import java.io.IOException;
 
 import static com.workshop.zukerjava.security.JwtUtils.TOKEN_PARAM_NAME;
 
+/**
+ * Add urlPatterns if other urls need to be filtered.
+ */
 @Component
 @WebFilter(filterName = "jwt_filter", urlPatterns = {"/usercenter/*"})
 public class JwtFilter implements Filter {
