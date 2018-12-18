@@ -40,6 +40,7 @@ public class UserCenterController {
         JSONObject ret = new JSONObject();
         User user = MongoUtils.findUser(user_id);
         if (user == null) {
+            ret.put("error", "can not find user");
             return ret.toJSONString();
         }
 
