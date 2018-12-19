@@ -1,27 +1,48 @@
 package com.workshop.zukerjava.util;
 
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.workshop.zukerjava.bean.FavoriteInfo;
 import com.workshop.zukerjava.bean.HousingInfo;
 import com.workshop.zukerjava.bean.Msg;
 import com.workshop.zukerjava.bean.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class MongoUtils {
-    @Autowired
+    private static final Logger log = LoggerFactory.getLogger(MongoUtils.class);
+
+    @Value("${spring.data.mongodb.uri}")
+    private static String mongoUri = "mongodb://zuker:zuker@111.231.132.88:27017/zuker";
+
     private static MongoTemplate mongoTemplate;
 
     public static MongoTemplate getMongoTemplate() {
-        return mongoTemplate;
+        if (mongoTemplate == null) {
+            if (mongoUri != null && !mongoUri.isEmpty()) {
+                log.info("init mongo utils");
+                MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoUri));
+                mongoTemplate = new MongoTemplate(mongoClient, "zuker");
+                return mongoTemplate;
+            } else {
+                log.error("can not init mongo utils: mongo uri is empty");
+                return null;
+            }
+        } else {
+            return mongoTemplate;
+        }
     }
 
-
     public static User findUser(String user_id) {
-        List<User> result = mongoTemplate.find(new Query(Criteria.where("user_id").is(user_id)), User.class);
+        List<User> result = getMongoTemplate().find(new Query(Criteria.where("user_id").is(user_id)), User.class);
         if (result.size() != 1) {
             return null;
         }
@@ -38,22 +59,22 @@ public class MongoUtils {
 
     public static List<Msg> getMessages(String user_id) {
         Criteria criteriaSend = Criteria.where("sender_id").is(user_id);
-        Criteria criteriaRecv = Criteria.where("receive_id").is(user_id);
-        return mongoTemplate.find(
+        Criteria criteriaRecv = Criteria.where("receiver_id").is(user_id);
+        return getMongoTemplate().find(
                 new Query(new Criteria().orOperator(criteriaSend, criteriaRecv)),
                 Msg.class
         );
     }
 
     public static List<HousingInfo> getHousingInfoList(String user_id) {
-        return mongoTemplate.find(
+        return getMongoTemplate().find(
                 new Query(Criteria.where("user_id").is(user_id)),
                 HousingInfo.class
         );
     }
 
     public static HousingInfo getHousingInfo(String _id) {
-        List<HousingInfo> list = mongoTemplate.find(
+        List<HousingInfo> list = getMongoTemplate().find(
                 new Query(Criteria.where("_id").is(_id)),
                 HousingInfo.class
         );
@@ -69,12 +90,12 @@ public class MongoUtils {
     }
 
     public static int insertMessage(Msg msg) {
-        mongoTemplate.insert(msg, "messages");
+        getMongoTemplate().insert(msg, "messages");
         return 0;
     }
 
     public static List<FavoriteInfo> getFavoriteInfoList(String user_id) {
-        return mongoTemplate.find(
+        return getMongoTemplate().find(
                 new Query(Criteria.where("user_id").is(user_id)),
                 FavoriteInfo.class
         );
@@ -82,7 +103,7 @@ public class MongoUtils {
 
 
     public static int removeFavoriteInfo(String favoriteInfoId) {
-        mongoTemplate.remove(new Query(Criteria.where("_id").is(favoriteInfoId)), FavoriteInfo.class);
+        getMongoTemplate().remove(new Query(Criteria.where("_id").is(favoriteInfoId)), FavoriteInfo.class);
         return 0;
     }
 

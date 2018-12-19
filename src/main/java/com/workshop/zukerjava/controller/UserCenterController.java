@@ -45,10 +45,11 @@ public class UserCenterController {
     }
 
     @RequestMapping(value = "/messages", method = RequestMethod.GET)
-    public String getMessages(@RequestParam("usre_id") String user_id) {
+    public String getMessages(@RequestParam("user_id") String user_id) {
         JSONObject ret = new JSONObject();
         User user = MongoUtils.findUser(user_id);
         if (user == null) {
+            ret.put("error", "can not find user");
             return ret.toJSONString();
         }
 
@@ -86,7 +87,8 @@ public class UserCenterController {
     }
 
     @RequestMapping(value = "/housing/edit/{_id}", method = RequestMethod.POST)
-    public int editHousing(@PathVariable("_id") String _id, @RequestParam("data") String data) {
+    public int editHousing(@RequestParam("user_id") String user_id, @PathVariable("_id") String _id,
+                           @RequestParam("data") String data) {
         HousingInfo housingInfo = (HousingInfo) JSONObject.parse(data);
         return MongoUtils.editHousingInfo(_id, housingInfo);
     }
