@@ -2,6 +2,7 @@ package com.workshop.zukerjava.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
@@ -15,7 +16,6 @@ import static com.workshop.zukerjava.security.JwtUtils.TOKEN_PARAM_NAME;
 /**
  * Add urlPatterns if other urls need to be filtered.
  */
-@Component
 @WebFilter(filterName = "jwt_filter", urlPatterns = {"/usercenter/*"})
 public class JwtFilter implements Filter {
     private Logger log = LoggerFactory.getLogger(this.getClass());
