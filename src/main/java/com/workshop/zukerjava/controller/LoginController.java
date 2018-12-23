@@ -2,6 +2,7 @@ package com.workshop.zukerjava.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.workshop.zukerjava.bean.User;
+import com.workshop.zukerjava.security.JwtUtils;
 import com.workshop.zukerjava.util.MongoUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,14 +27,15 @@ public class LoginController {
             return ret.toJSONString();
         }
         ret.put("user_id", user.getUser_id());
-        //TODO:JWT
-        //ret.put("token", JWT);
+        //JWT 新加的
+        String JWT = JwtUtils.createToken(user.getUser_id());
+        ret.put("token", JWT);
         return ret.toJSONString();
     }
 
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public int logout(@RequestParam("user_id") String user_id) {
-        //TODO
+        //TODO logout
         return 0;
     }
 
@@ -43,7 +45,6 @@ public class LoginController {
                         @RequestParam("password") String password,
                         @RequestParam("avatar_Path") List <String> avatarPath) {
 
-        //TODO
         User sameName = MongoUtils.findUserByName(username);
         User sameEmail = MongoUtils.findUser(email);
         if (sameName == null && sameEmail == null) {
@@ -62,7 +63,7 @@ public class LoginController {
     public int forget(@RequestParam("email") String email,
                         @RequestParam("username") String username,
                         @RequestParam("new_password") String newpassword) {
-        //TODO
+
         User user = MongoUtils.findUserByName(username);
         if (user != null) {
             user.setPassword(newpassword);
@@ -76,7 +77,7 @@ public class LoginController {
     public int updatePassword(@RequestParam("user_id") String user_id,
                       @RequestParam("origin_pwd") String pwd,
                       @RequestParam("new_pwd") String newpwd) {
-        //TODO
+
         User user = MongoUtils.findUser(user_id);
         if (user != null && user.getPassword() == pwd) {
             user.setPassword(newpwd);
