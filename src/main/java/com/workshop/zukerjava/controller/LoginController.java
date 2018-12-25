@@ -4,32 +4,35 @@ import com.alibaba.fastjson.JSONObject;
 import com.workshop.zukerjava.bean.User;
 import com.workshop.zukerjava.security.JwtUtils;
 import com.workshop.zukerjava.util.MongoUtils;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.servlet.http.Cookie;
+
 
 @RestController
-@RequestMapping("/login")
+@RequestMapping("/user")
 public class LoginController {
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public String login(@RequestParam("username") String username,
-                        @RequestParam("password")String password) {
+    public String login(@RequestBody JSONObject data) {/*
+                        @RequestParam("username") String username,
+                        @RequestParam("password")String password) {*/
+        String username = data.getString("username");
+        String password = data.getString("password");
         JSONObject ret = new JSONObject();
         User user = MongoUtils.findUserByName(username);
         if (user == null) {
             return ret.toJSONString();
         }
-        if (user.getPassword() != password){
+        if (!user.getPassword().equals(password)){
             return ret.toJSONString();
         }
         ret.put("user_id", user.getUser_id());
         //JWT 新加的
         String JWT = JwtUtils.createToken(user.getUser_id());
         ret.put("token", JWT);
+        Cookie cookie = new Cookie("token", JWT);
+        
         return ret.toJSONString();
     }
 
@@ -40,10 +43,15 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public int register(@RequestParam("email") String email,
+    public int register(@RequestBody JSONObject data) {
+                        /*@RequestParam("email") String email,
                         @RequestParam("username") String username,
                         @RequestParam("password") String password,
-                        @RequestParam("avatar_Path") List <String> avatarPath) {
+                        @RequestParam("avatar_Path") List <String> avatarPath) {*/
+        String email = data.get("email").toString();
+        String username = data.get("username").toString();
+        String password = data.get("password").toString();
+        //String avatarPath = data.get("avatar_Path").toString();
 
         User sameName = MongoUtils.findUserByName(username);
         User sameEmail = MongoUtils.findUser(email);
@@ -52,7 +60,7 @@ public class LoginController {
             user.setUsername(username);
             user.setEmail(email);
             user.setPassword(password);
-            user.setAvatarPath(avatarPath);
+            //user.setAvatarPath(avatarPath);
             return MongoUtils.register(user);
         }
 
