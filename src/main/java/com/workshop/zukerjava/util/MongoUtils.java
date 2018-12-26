@@ -41,7 +41,7 @@ public class MongoUtils {
         }
     }
 
-    public static User findUser(String user_id) {
+    public static User findUser(Long user_id) {
         List<User> result = getMongoTemplate().find(new Query(Criteria.where("user_id").is(user_id)), User.class);
         if (result.size() != 1) {
             return null;
@@ -57,7 +57,7 @@ public class MongoUtils {
         return result.get(0);
     }
 
-    public static List<Msg> getMessages(String user_id) {
+    public static List<Msg> getMessages(Long user_id) {
         Criteria criteriaSend = Criteria.where("sender_id").is(user_id);
         Criteria criteriaRecv = Criteria.where("receiver_id").is(user_id);
         return getMongoTemplate().find(
@@ -66,7 +66,7 @@ public class MongoUtils {
         );
     }
 
-    public static List<HousingInfo> getHousingInfoList(String user_id) {
+    public static List<HousingInfo> getHousingInfoList(Long user_id) {
         return getMongoTemplate().find(
                 new Query(Criteria.where("user_id").is(user_id)),
                 HousingInfo.class
@@ -94,7 +94,7 @@ public class MongoUtils {
         return 0;
     }
 
-    public static List<FavoriteInfo> getFavoriteInfoList(String user_id) {
+    public static List<FavoriteInfo> getFavoriteInfoList(Long user_id) {
         return getMongoTemplate().find(
                 new Query(Criteria.where("user_id").is(user_id)),
                 FavoriteInfo.class
@@ -107,7 +107,7 @@ public class MongoUtils {
         return 0;
     }
 
-    public static int updateUser(String user_id, String newUsername, String newEmail) {
+    public static int updateUser(Long user_id, String newUsername, String newEmail) {
         //TODO
         User user = findUser(user_id);
         if (user!=null) {
@@ -118,7 +118,7 @@ public class MongoUtils {
         return 0;
     }
 
-    public static int updateProfileImage(String user_id, List <String> new_avatar_path){
+    public static int updateProfileImage(Long user_id, List <String> new_avatar_path){
         //TODO
         User user = findUser(user_id);
         if (user!=null){
@@ -128,7 +128,7 @@ public class MongoUtils {
         return 0;
     }
 
-    public static int updatePassword(String user_id,String password){
+    public static int updatePassword(Long user_id,String password){
         User user = findUser(user_id);
         if (user!=null){
             user.setPassword(password);
@@ -143,7 +143,7 @@ public class MongoUtils {
         return 1;
     }
 
-    public static int forget(String user_id, String newpassword){
+    public static int forget(Long user_id, String newpassword){
         User user = findUser(user_id);
         if (user!=null){
             user.setPassword(newpassword);

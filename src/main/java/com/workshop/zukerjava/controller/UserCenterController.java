@@ -17,35 +17,44 @@ import java.util.List;
 public class UserCenterController {
 
     @RequestMapping(value = "/getprofile", method = RequestMethod.GET)
-    public String getProfile(@RequestParam("user_id") String user_id) {
+    public String getProfile(@RequestBody JSONObject data) {
+        /*@RequestParam("user_id") Long user_id) {*/
+        Long user_id = Long.valueOf(data.get("user_id").toString());
         JSONObject ret = new JSONObject();
         User user = MongoUtils.findUser(user_id);
         if (user == null) {
             return ret.toJSONString();
         }
-        ret.put("user_id", user.getUser_id());
+        //ret.put("user_id", user.getUser_id());
         ret.put("username", user.getUsername());
         ret.put("email", user.getEmail());
-        ret.put("avatarPath", user.getAvatarPath());
+        //ret.put("avatarPath", user.getAvatarPath());
         return ret.toJSONString();
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public int updateProfile(@RequestParam("user_id") String user_id,
+    public int updateProfile(@RequestBody JSONObject data) {
+            /*@RequestParam("user_id") Long user_id,
                              @RequestParam("new_username") String new_username,
-                             @RequestParam("new_email") String new_email) {
+                             @RequestParam("new_email") String new_email) {*/
+            Long user_id = Long.valueOf(data.get("user_id").toString());
+            String new_username = data.get("new_username").toString();
+            String new_email = data.get("new_email").toString();
         return MongoUtils.updateUser(user_id,new_username,new_email);
     }
 
     @RequestMapping(value = "/update/image", method = RequestMethod.POST)
-    public int updateProfileImage(@RequestParam("user_id") String user_id,
-                                  @RequestParam("new_avatar_path") List <String> new_avatar_path) {
+    public int updateProfileImage(@RequestBody JSONObject data) {
+            /*(@RequestParam("user_id") Long user_id,
+                                  @RequestParam("new_avatar_path") List <String> new_avatar_path) {*/
         //JSONObject obj = JSONObject.parseObject(data);
+        Long user_id = Long.valueOf(data.get("user_id").toString());
+        List <String> new_avatar_path = (List<String>) data.get("new_avatar_name");
         return MongoUtils.updateProfileImage( user_id, new_avatar_path);
     }
 
     @RequestMapping(value = "/messages", method = RequestMethod.GET)
-    public String getMessages(@RequestParam("user_id") String user_id) {
+    public String getMessages(@RequestParam("user_id") Long user_id) {
         JSONObject ret = new JSONObject();
         User user = MongoUtils.findUser(user_id);
         if (user == null) {
@@ -55,18 +64,18 @@ public class UserCenterController {
 
         List<Msg> msgs = MongoUtils.getMessages(user_id);
 
-        ret.put("usre_id", user_id);
+        ret.put("user_id", user_id);
         ret.put("user_name", user.getUsername());
         ret.put("messages", msgs);
         return ret.toJSONString();
     }
 
     @RequestMapping(value = "/messages", method = RequestMethod.POST)
-    public int sendMsg(@RequestParam("user_id") String user_id,
+    public int sendMsg(@RequestParam("user_id") Long user_id,
                        @RequestBody JSONObject data) {
                        //@RequestParam("content") String content) {
         String content = data.getString("content");
-        String recver_id = data.getString("user_id");
+        Long recver_id = Long.valueOf(data.getString("user_id"));
         Msg msg = new Msg();
         User sender = MongoUtils.findUser(user_id);
         User recver = MongoUtils.findUser(recver_id);
@@ -83,7 +92,7 @@ public class UserCenterController {
     }
 
     @RequestMapping(value = "/housing/view", method = RequestMethod.GET)
-    public String viewHousing(@RequestParam("user_id") String user_id) {
+    public String viewHousing(@RequestParam("user_id") Long user_id) {
         List<HousingInfo> housingInfos = MongoUtils.getHousingInfoList(user_id);
         JSONArray array = new JSONArray();
         array.addAll(housingInfos);
@@ -91,14 +100,14 @@ public class UserCenterController {
     }
 
     @RequestMapping(value = "/housing/edit/{_id}", method = RequestMethod.POST)
-    public int editHousing(@RequestParam("user_id") String user_id, @PathVariable("_id") String _id,
+    public int editHousing(@RequestParam("user_id") Long user_id, @PathVariable("_id") String _id,
                            @RequestParam("data") String data) {
         HousingInfo housingInfo = (HousingInfo) JSONObject.parse(data);
         return MongoUtils.editHousingInfo(_id, housingInfo);
     }
 
     @RequestMapping(value = "/favorite/list", method = RequestMethod.GET)
-    public String getFavoriteList(@RequestParam("user_id") String user_id) {
+    public String getFavoriteList(@RequestParam("user_id") Long user_id) {
         List<FavoriteInfo> favoriteInfos = MongoUtils.getFavoriteInfoList(user_id);
         JSONArray array = new JSONArray();
         array.addAll(favoriteInfos);
@@ -106,7 +115,7 @@ public class UserCenterController {
     }
 
     @RequestMapping(value = "/favorite/remove/{_id}", method = RequestMethod.GET)
-    public int removeFavoriteInfo(@RequestParam("user_id") String user_id, @PathVariable("_id") String _id) {
+    public int removeFavoriteInfo(@RequestParam("user_id") Long user_id, @PathVariable("_id") String _id) {
         return MongoUtils.removeFavoriteInfo(_id);
     }
 }

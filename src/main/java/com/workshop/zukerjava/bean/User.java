@@ -16,7 +16,8 @@ public class User{
     //user_id
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String user_id;
+    @Field("user_id")
+    private Long user_id;
     //@Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
 
     @Field("username")
@@ -33,11 +34,11 @@ public class User{
 
     //@Id
     //@GeneratedValue(strategy= GenerationType.AUTO)
-    public String getUser_id() {
+    public Long getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(String user_id) {
+    public void setUser_id(Long user_id) {
         this.user_id = user_id;
     }
 

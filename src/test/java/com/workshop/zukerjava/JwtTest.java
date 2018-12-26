@@ -9,7 +9,7 @@ public class JwtTest {
     @Test
     public void tokenTest() {
         JwtUtils.generateKey(new Date().getTime());
-        String t = JwtUtils.createToken("tony");
+        String t = JwtUtils.createToken((long) 1);
         System.out.println(t);
         System.out.println(JwtUtils.getUserId(t));
         t = "0" + t.substring(1);
