@@ -61,11 +61,15 @@ public class UserCenterController {
         return ret.toJSONString();
     }
 
-    @RequestMapping(value = "/messages/send", method = RequestMethod.POST)
-    public int sendMsg(@RequestParam("user_id") String user_id, @RequestParam("content") String content) {
+    @RequestMapping(value = "/messages", method = RequestMethod.POST)
+    public int sendMsg(@RequestParam("user_id") String user_id,
+                       @RequestBody JSONObject data) {
+                       //@RequestParam("content") String content) {
+        String content = data.getString("content");
+        String recver_id = data.getString("user_id");
         Msg msg = new Msg();
-        User sender = MongoUtils.findUser("");
-        User recver = MongoUtils.findUser(user_id);
+        User sender = MongoUtils.findUser(user_id);
+        User recver = MongoUtils.findUser(recver_id);
         if (sender == null || recver == null) {
             return 1;
         }

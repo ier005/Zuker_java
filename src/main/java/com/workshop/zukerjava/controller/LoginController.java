@@ -6,8 +6,6 @@ import com.workshop.zukerjava.security.JwtUtils;
 import com.workshop.zukerjava.util.MongoUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.Cookie;
-
 
 @RestController
 @RequestMapping("/user")
@@ -31,7 +29,6 @@ public class LoginController {
         //JWT 新加的
         String JWT = JwtUtils.createToken(user.getUser_id());
         ret.put("token", JWT);
-        Cookie cookie = new Cookie("token", JWT);
 
         return ret.toJSONString();
     }
