@@ -32,7 +32,7 @@ public class LoginController {
         String JWT = JwtUtils.createToken(user.getUser_id());
         ret.put("token", JWT);
         Cookie cookie = new Cookie("token", JWT);
-        
+
         return ret.toJSONString();
     }
 

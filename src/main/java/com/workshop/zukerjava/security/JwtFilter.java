@@ -28,7 +28,9 @@ public class JwtFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
                          FilterChain filterChain) throws IOException, ServletException {
-        String jwtToken = servletRequest.getParameter(TOKEN_PARAM_NAME);
+        //String jwtToken = servletRequest.getParameter(TOKEN_PARAM_NAME);
+        HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
+        String jwtToken = httpRequest.getHeader("Authorization");
         if (jwtToken == null) {
             toResponse(servletResponse, 400, TOKEN_PARAM_NAME + " not found.");
             return;
