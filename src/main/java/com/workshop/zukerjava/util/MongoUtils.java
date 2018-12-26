@@ -21,7 +21,7 @@ public class MongoUtils {
     private static final Logger log = LoggerFactory.getLogger(MongoUtils.class);
 
     @Value("${spring.data.mongodb.uri}")
-    private static String mongoUri = "mongodb://zuker:zuker@111.231.132.88:27017/zuker";
+    private static String mongoUri = "mongodb://zuker:zuker@localhost:27017/zuker";
 
     private static MongoTemplate mongoTemplate;
 
@@ -50,7 +50,7 @@ public class MongoUtils {
     }
 
     public static User findUserByName(String username) {
-        List<User> result = mongoTemplate.find(new Query(Criteria.where("username").is(username)), User.class);
+        List<User> result = getMongoTemplate().find(new Query(Criteria.where("username").is(username)), User.class);
         if (result.size() != 1) {
             return null;
         }
@@ -138,7 +138,8 @@ public class MongoUtils {
     }
     public static int register(User user){
 
-        mongoTemplate.insert(user, "user");
+        getMongoTemplate().insert(user, "user");
+        log.debug("insert register!!!!");
         return 1;
     }
 
