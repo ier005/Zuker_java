@@ -54,6 +54,7 @@ public class LoginController {
         //User sameEmail = MongoUtils.findUser(email);
         if (sameName == null ) {
             User user = new User();
+            user.setUser_id();
             user.setUsername(username);
             user.setEmail(email);
             user.setPassword(password);
