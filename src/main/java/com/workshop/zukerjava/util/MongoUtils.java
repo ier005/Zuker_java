@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -108,13 +109,21 @@ public class MongoUtils {
     }
 
     public static int updateUser(Long user_id, String newUsername, String newEmail) {
-        //TODO
         User user = findUser(user_id);
+        User samename = findUserByName(newUsername);
+        if (samename!=null && !samename.getUser_id().equals(user_id)){
+            return -1;
+        }
         if (user!=null) {
-            user.setUsername(newUsername);
-            user.setEmail(newEmail);
+            Query query = new Query();
+            query.addCriteria(Criteria.where("user_id").is(user_id));
+            Update update = new Update();
+            update.set("username",newUsername);
+            update.set("email",newEmail);
+            getMongoTemplate().updateMulti(query, update,User.class);
             return 1;
         }
+
         return 0;
     }
 
@@ -122,20 +131,31 @@ public class MongoUtils {
         //TODO
         User user = findUser(user_id);
         if (user!=null){
-            user.setAvatarPath(new_avatar_path);
+            Query query = new Query();
+            query.addCriteria(Criteria.where("user_id").is(user_id));
+            Update update = new Update();
+            update.set("avatar_path",new_avatar_path);
+            getMongoTemplate().updateMulti(query, update,User.class);
             return 1;
         }
         return 0;
     }
 
-    public static int updatePassword(Long user_id,String password){
+    public static int updatePassword(Long user_id,String pwd,String newpwd){
         User user = findUser(user_id);
-        if (user!=null){
-            user.setPassword(password);
+
+        if (user!=null && user.getPassword().equals(pwd)){
+            Query query = new Query();
+            query.addCriteria(Criteria.where("user_id").is(user_id));
+            Update update = new Update();
+            update.set("password",newpwd);
+            getMongoTemplate().updateMulti(query, update,User.class);
+
             return 1;
         }
         return 0;
     }
+
     public static int register(User user){
 
         getMongoTemplate().insert(user, "user");

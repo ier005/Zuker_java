@@ -17,9 +17,10 @@ import java.util.List;
 public class UserCenterController {
 
     @RequestMapping(value = "/getprofile", method = RequestMethod.GET)
-    public String getProfile(@RequestBody JSONObject data) {
+    public String getProfile(@RequestParam("user_id") Long user_id) {
         /*@RequestParam("user_id") Long user_id) {*/
-        Long user_id = Long.valueOf(data.get("user_id").toString());
+        //Long user_id = Long.valueOf(data.get("user_id").toString());
+        //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
         JSONObject ret = new JSONObject();
         User user = MongoUtils.findUser(user_id);
         if (user == null) {
@@ -33,22 +34,27 @@ public class UserCenterController {
     }
 
     @RequestMapping(value = "/update", method = RequestMethod.POST)
-    public int updateProfile(@RequestBody JSONObject data) {
+    public int updateProfile(@RequestParam("user_id") Long user_id,
+                             @RequestBody JSONObject data) {
             /*@RequestParam("user_id") Long user_id,
                              @RequestParam("new_username") String new_username,
                              @RequestParam("new_email") String new_email) {*/
-            Long user_id = Long.valueOf(data.get("user_id").toString());
+            //Long user_id = Long.valueOf(data.get("user_id").toString());
+            //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
             String new_username = data.get("new_username").toString();
             String new_email = data.get("new_email").toString();
         return MongoUtils.updateUser(user_id,new_username,new_email);
     }
 
     @RequestMapping(value = "/update/image", method = RequestMethod.POST)
-    public int updateProfileImage(@RequestBody JSONObject data) {
+    public int updateProfileImage(@RequestParam("user_id") Long user_id,
+                                  @RequestBody JSONObject data) {
             /*(@RequestParam("user_id") Long user_id,
                                   @RequestParam("new_avatar_path") List <String> new_avatar_path) {*/
         //JSONObject obj = JSONObject.parseObject(data);
-        Long user_id = Long.valueOf(data.get("user_id").toString());
+        //Long user_id = Long.valueOf(data.get("user_id").toString());
+        //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
+
         List <String> new_avatar_path = (List<String>) data.get("new_avatar_name");
         return MongoUtils.updateProfileImage( user_id, new_avatar_path);
     }
