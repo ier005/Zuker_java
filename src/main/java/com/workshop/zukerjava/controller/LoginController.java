@@ -83,11 +83,12 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/update/password", method = RequestMethod.POST)
-    public int updatePassword(@RequestBody JSONObject data) {
+    public int updatePassword(@RequestParam("user_id") Long user_id,
+                              @RequestBody JSONObject data) {
                     /*@RequestParam("user_id") String user_id,
                       @RequestParam("origin_pwd") String pwd,
                       @RequestParam("new_pwd") String newpwd) {*/
-        Long user_id = Long.valueOf("data.get(\"user_id\").toString()");
+        //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
         String pwd = data.get("origin_pwd").toString();
         String newpwd= data.get("new_pwd").toString();
         User user = MongoUtils.findUser(user_id);
