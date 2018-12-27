@@ -1,32 +1,38 @@
 package com.workshop.zukerjava.bean;
 
-import org.springframework.data.mongodb.core.index.IndexDirection;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import javax.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import java.io.Serializable;
 /**
  * 用户个人信息java bean
  */
 
 @Entity
 @Document(collection = "user")
-public class User implements Serializable {
-
+public class User{
+    //user_id
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String user_id;
-    @Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
+    //@Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
 
+    @Field("username")
     private String username;
 
+    @Field("password")
     private String password;
 
+    @Field("email")
     private String email; //为了找回密码，加上邮箱
 
-    private String avatarPath; //上传头像：图像路径
+    @Field("avatarPath")
+    private List<String> avatarPath = new ArrayList<>(); //上传头像：图像路径
 
+    //@Id
+    //@GeneratedValue(strategy= GenerationType.AUTO)
     public String getUser_id() {
         return user_id;
     }
@@ -59,20 +65,12 @@ public class User implements Serializable {
         this.email = email;
     }
 
-    public String getAvatarPath() {
+    public List<String> getAvatarPath() {
         return avatarPath;
     }
 
-    public void setAvatarPath(String avatarPath) {
+    public void setAvatarPath(List<String> avatarPath) {
         this.avatarPath = avatarPath;
     }
-
-
-    //参考https://github.com/shuangbofu/ustate/
-
-    @Override
-    public String toString() {
-        return "User [id=" + user_id + ", username=" + username + ", password="
-                + password + ", avatarPath=" + avatarPath + "]";
-    }
+    
 }

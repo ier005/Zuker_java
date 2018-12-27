@@ -21,7 +21,7 @@ public class MongoUtils {
     private static final Logger log = LoggerFactory.getLogger(MongoUtils.class);
 
     @Value("${spring.data.mongodb.uri}")
-    private static String mongoUri = "mongodb://zuker:zuker@111.231.132.88:27017/zuker";
+    private static String mongoUri = "mongodb://zuker:zuker@localhost:27017/zuker";
 
     private static MongoTemplate mongoTemplate;
 
@@ -43,6 +43,14 @@ public class MongoUtils {
 
     public static User findUser(String user_id) {
         List<User> result = getMongoTemplate().find(new Query(Criteria.where("user_id").is(user_id)), User.class);
+        if (result.size() != 1) {
+            return null;
+        }
+        return result.get(0);
+    }
+
+    public static User findUserByName(String username) {
+        List<User> result = getMongoTemplate().find(new Query(Criteria.where("username").is(username)), User.class);
         if (result.size() != 1) {
             return null;
         }
@@ -98,4 +106,52 @@ public class MongoUtils {
         getMongoTemplate().remove(new Query(Criteria.where("_id").is(favoriteInfoId)), FavoriteInfo.class);
         return 0;
     }
+
+    public static int updateUser(String user_id, String newUsername, String newEmail) {
+        //TODO
+        User user = findUser(user_id);
+        if (user!=null) {
+            user.setUsername(newUsername);
+            user.setEmail(newEmail);
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int updateProfileImage(String user_id, List <String> new_avatar_path){
+        //TODO
+        User user = findUser(user_id);
+        if (user!=null){
+            user.setAvatarPath(new_avatar_path);
+            return 1;
+        }
+        return 0;
+    }
+
+    public static int updatePassword(String user_id,String password){
+        User user = findUser(user_id);
+        if (user!=null){
+            user.setPassword(password);
+            return 1;
+        }
+        return 0;
+    }
+    public static int register(User user){
+
+        getMongoTemplate().insert(user, "user");
+        log.debug("insert register!!!!");
+        return 1;
+    }
+
+    public static int forget(String user_id, String newpassword){
+        User user = findUser(user_id);
+        if (user!=null){
+            user.setPassword(newpassword);
+            return 1;
+        }
+        return 0;
+    }
+
+
+
 }

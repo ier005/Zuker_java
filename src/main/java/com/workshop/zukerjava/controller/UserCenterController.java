@@ -15,24 +15,33 @@ import java.util.*;
 @RequestMapping("/usercenter")
 public class UserCenterController {
 
-//    @RequestMapping(value = "/getprofile", method = RequestMethod.GET)
-//    public String getProfile(@RequestParam("user_id") String user_id) {
-//        User user = MongoUtils.findUser(user_id);
-//        return JSONObject.toJSONString(user);
-//    }
-//
-//    @RequestMapping(value = "/update", method = RequestMethod.POST)
-//    public int updateProfile(@RequestParam("data") String data) {
-//        User user = (User) JSONObject.parse(data);
-//        return MongoUtils.updateUser(user);
-//    }
-//
-//    @RequestMapping(value = "/update/image", method = RequestMethod.POST)
-//    public int updateProfileImage(@RequestParam("data") String data) {
-//        JSONObject obj = JSONObject.parseObject(data);
-//
-//        return 0;
-//    }
+    @RequestMapping(value = "/getprofile", method = RequestMethod.GET)
+    public String getProfile(@RequestParam("user_id") String user_id) {
+        JSONObject ret = new JSONObject();
+        User user = MongoUtils.findUser(user_id);
+        if (user == null) {
+            return ret.toJSONString();
+        }
+        ret.put("user_id", user.getUser_id());
+        ret.put("username", user.getUsername());
+        ret.put("email", user.getEmail());
+        ret.put("avatarPath", user.getAvatarPath());
+        return ret.toJSONString();
+    }
+
+    @RequestMapping(value = "/update", method = RequestMethod.POST)
+    public int updateProfile(@RequestParam("user_id") String user_id,
+                             @RequestParam("new_username") String new_username,
+                             @RequestParam("new_email") String new_email) {
+        return MongoUtils.updateUser(user_id,new_username,new_email);
+    }
+
+    @RequestMapping(value = "/update/image", method = RequestMethod.POST)
+    public int updateProfileImage(@RequestParam("user_id") String user_id,
+                                  @RequestParam("new_avatar_path") List <String> new_avatar_path) {
+        //JSONObject obj = JSONObject.parseObject(data);
+        return MongoUtils.updateProfileImage( user_id, new_avatar_path);
+    }
 
     @RequestMapping(value = "/messages", method = RequestMethod.GET)
     public String getMessages(@RequestParam("user_id") String user_id) {
@@ -72,11 +81,15 @@ public class UserCenterController {
         return ret.toJSONString();
     }
 
-    @RequestMapping(value = "/messages/send", method = RequestMethod.POST)
-    public int sendMsg(@RequestParam("user_id") String user_id, @RequestParam("content") String content) {
+    @RequestMapping(value = "/messages", method = RequestMethod.POST)
+    public int sendMsg(@RequestParam("user_id") String user_id,
+                       @RequestBody JSONObject data) {
+                       //@RequestParam("content") String content) {
+        String content = data.getString("content");
+        String recver_id = data.getString("user_id");
         Msg msg = new Msg();
-        User sender = MongoUtils.findUser("");
-        User recver = MongoUtils.findUser(user_id);
+        User sender = MongoUtils.findUser(user_id);
+        User recver = MongoUtils.findUser(recver_id);
         if (sender == null || recver == null) {
             return 1;
         }
