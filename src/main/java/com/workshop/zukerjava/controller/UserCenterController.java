@@ -9,8 +9,7 @@ import com.workshop.zukerjava.bean.User;
 import com.workshop.zukerjava.util.MongoUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/usercenter")
@@ -37,18 +36,39 @@ public class UserCenterController {
 
     @RequestMapping(value = "/messages", method = RequestMethod.GET)
     public String getMessages(@RequestParam("user_id") String user_id) {
-        JSONObject ret = new JSONObject();
         User user = MongoUtils.findUser(user_id);
         if (user == null) {
+            JSONObject ret = new JSONObject();
             ret.put("error", "can not find user");
             return ret.toJSONString();
         }
 
         List<Msg> msgs = MongoUtils.getMessages(user_id);
 
-        ret.put("usre_id", user_id);
-        ret.put("user_name", user.getUsername());
-        ret.put("messages", msgs);
+        JSONArray ret = new JSONArray();
+
+        Map<String, List<Msg>> map = new HashMap<>();
+        Map<String, String> nameMap = new HashMap<>();
+        for (Msg m : msgs) {
+            List<Msg> l;
+            if (m.getSender_id().equals(user_id)) {
+                l = map.computeIfAbsent(m.getReceiver_id(), k -> new ArrayList<>());
+                nameMap.putIfAbsent(m.getReceiver_id(), m.getReceiver_name());
+            } else {
+                l = map.computeIfAbsent(m.getSender_id(), k -> new ArrayList<>());
+                nameMap.putIfAbsent(m.getSender_id(), m.getSender_name());
+            }
+            l.add(m);
+        }
+
+        for (Map.Entry<String, List<Msg>> e : map.entrySet()) {
+            JSONObject obj = new JSONObject();
+            obj.put("user_id", e.getKey());
+            obj.put("username", nameMap.getOrDefault(e.getKey(), ""));
+            obj.put("messages", e.getValue());
+            ret.add(obj);
+        }
+
         return ret.toJSONString();
     }
 
