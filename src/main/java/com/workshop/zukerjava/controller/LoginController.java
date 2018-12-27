@@ -93,7 +93,6 @@ public class LoginController {
         //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
         String pwd = data.get("origin_pwd").toString();
         String newpwd= data.get("new_pwd").toString();
-        User user = MongoUtils.findUser(user_id);
         return MongoUtils.updatePassword(user_id,pwd,newpwd);
 
     }
