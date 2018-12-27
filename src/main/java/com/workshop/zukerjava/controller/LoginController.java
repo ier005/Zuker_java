@@ -75,8 +75,10 @@ public class LoginController {
         String newpassword = data.get("newpassword").toString();
         User user = MongoUtils.findUserByName(username);
         if (user != null) {
-            user.setPassword(newpassword);
-            return MongoUtils.forget(user.getUser_id(),newpassword);
+            if (MongoUtils.findUserByName(username).getEmail().equals(email) ){
+                return MongoUtils.forget(user.getUser_id(), newpassword);
+            }
+            return 0;
         }
 
         return 0;

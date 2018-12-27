@@ -136,6 +136,7 @@ public class MongoUtils {
         }
         return 0;
     }
+
     public static int register(User user){
 
         getMongoTemplate().insert(user, "user");
