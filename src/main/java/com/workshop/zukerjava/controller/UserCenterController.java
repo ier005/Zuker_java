@@ -17,8 +17,7 @@ import java.util.List;
 public class UserCenterController {
 
     @RequestMapping(value = "/getprofile", method = RequestMethod.GET)
-    public String getProfile(@RequestParam("user_id") Long user_id,
-                             @RequestBody JSONObject data) {
+    public String getProfile(@RequestParam("user_id") Long user_id) {
         /*@RequestParam("user_id") Long user_id) {*/
         //Long user_id = Long.valueOf(data.get("user_id").toString());
         //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
