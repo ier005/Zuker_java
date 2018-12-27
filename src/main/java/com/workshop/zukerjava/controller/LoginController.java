@@ -94,12 +94,8 @@ public class LoginController {
         String pwd = data.get("origin_pwd").toString();
         String newpwd= data.get("new_pwd").toString();
         User user = MongoUtils.findUser(user_id);
-        if (user != null && user.getPassword() == pwd) {
-            user.setPassword(newpwd);
-            return MongoUtils.updatePassword(user_id,newpwd);
-        }
+        return MongoUtils.updatePassword(user_id,pwd,newpwd);
 
-        return 0;
     }
 
 }

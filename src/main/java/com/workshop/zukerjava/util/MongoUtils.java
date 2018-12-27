@@ -128,10 +128,10 @@ public class MongoUtils {
         return 0;
     }
 
-    public static int updatePassword(Long user_id,String password){
+    public static int updatePassword(Long user_id,String pwd,String newpwd){
         User user = findUser(user_id);
-        if (user!=null){
-            user.setPassword(password);
+        if (user!=null && user.getPassword().equals(pwd)){
+            user.setPassword(newpwd);
             return 1;
         }
         return 0;
