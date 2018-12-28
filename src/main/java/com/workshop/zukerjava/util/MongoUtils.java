@@ -85,6 +85,11 @@ public class MongoUtils {
         return list.get(0);
     }
 
+    public static int addHousingInfo(HousingInfo hi) {
+        getMongoTemplate().insert(hi, "housing");
+        return 0;
+    }
+
     public static int editHousingInfo(String _id, HousingInfo housingInfo) {
         //TODO
         return 0;

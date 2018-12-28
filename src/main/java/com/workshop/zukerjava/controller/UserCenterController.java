@@ -7,6 +7,7 @@ import com.workshop.zukerjava.bean.HousingInfo;
 import com.workshop.zukerjava.bean.Msg;
 import com.workshop.zukerjava.bean.User;
 import com.workshop.zukerjava.util.MongoUtils;
+import org.springframework.boot.jackson.JsonObjectDeserializer;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -143,5 +144,15 @@ public class UserCenterController {
     @RequestMapping(value = "/favorite/remove/{_id}", method = RequestMethod.GET)
     public int removeFavoriteInfo(@RequestParam("user_id") Long user_id, @PathVariable("_id") String _id) {
         return MongoUtils.removeFavoriteInfo(_id);
+    }
+
+    @RequestMapping(value = "/housing", method = RequestMethod.POST)
+    public int addHousing(
+            @RequestBody JSONObject data,
+            @RequestParam("user_id") Long user_id) throws Exception {
+        HousingInfo housingInfo = new HousingInfo();
+        housingInfo.setUser_id(user_id);
+        housingInfo.setFromJson(data);
+        return MongoUtils.addHousingInfo(housingInfo);
     }
 }

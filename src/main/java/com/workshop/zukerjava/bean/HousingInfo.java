@@ -1,9 +1,11 @@
 package com.workshop.zukerjava.bean;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import javax.persistence.Id;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -11,10 +13,13 @@ import java.util.List;
 /**
  * 房源信息java bean
  */
-@Document(collection = "housing_info")
+@Document(collection = "housing")
 public class HousingInfo {
     @Id
     private String _id;
+
+    @Field("user_id")
+    private Long user_id;
 
     @Field("name")
     private String name;
@@ -71,6 +76,10 @@ public class HousingInfo {
     public void set_id(String _id) {
         this._id = _id;
     }
+
+    public Long getUser_id() {return user_id; }
+
+    public void setUser_id(Long user_id) {this.user_id = user_id; }
 
     public String getName() {
         return name;
@@ -198,5 +207,30 @@ public class HousingInfo {
 
     public void setOthers(List<String> others) {
         this.others = others;
+    }
+
+    public int setFromJson(JSONObject data) throws Exception {
+        this.setAcreage(data.getString("acreage"));
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        if (!data.getString("availableTime_start").isEmpty()) {
+            this.setAvailableTime_start(format.parse(data.getString("availableTime_start")));
+        }
+        if (!data.getString("availableTime_end").isEmpty()) {
+            this.setAvailableTime_end(format.parse(data.getString("availableTime_end")));
+        }
+        this.setBath(data.getString("bath"));
+        this.setDecoration(data.getString("decoration"));
+        this.setDescription(data.getString("description"));
+        this.setHall(data.getString("hall"));
+        this.setLocation(data.getString("location"));
+        this.setMaxPrice(data.getString("maxPrice"));
+        this.setMinPrice(data.getString("minPrice"));
+        this.setMethod(data.getString("method"));
+        this.setName(data.getString("name"));
+        this.setPhoneNumber(data.getString("phoneNumber"));
+        this.setRoom(data.getString("room"));
+        this.setOthers(JSONObject.parseArray(data.getString("other"), String.class));
+
+        return 0;
     }
 }

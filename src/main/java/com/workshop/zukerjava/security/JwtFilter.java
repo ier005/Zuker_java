@@ -30,12 +30,12 @@ public class JwtFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
         String jwtToken = httpRequest.getHeader("Authorization");
         if (jwtToken == null) {
-            toResponse(servletResponse, 400, TOKEN_PARAM_NAME + " not found.");
+            toResponse(servletResponse, 401, TOKEN_PARAM_NAME + " not found.");
             return;
         }
         String userId = JwtUtils.verifyAndGetUserId(jwtToken);
         if (userId == null) {
-            toResponse(servletResponse, 400, "Verify " + TOKEN_PARAM_NAME + " failed.");
+            toResponse(servletResponse, 401, "Verify " + TOKEN_PARAM_NAME + " failed.");
             return;
         }
         ParamHttpServletRequestWrapper pr = new ParamHttpServletRequestWrapper((HttpServletRequest) servletRequest);
