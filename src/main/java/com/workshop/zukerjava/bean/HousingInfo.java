@@ -229,7 +229,7 @@ public class HousingInfo {
         this.setName(data.getString("name"));
         this.setPhoneNumber(data.getString("phoneNumber"));
         this.setRoom(data.getString("room"));
-        this.setOthers(JSONObject.parseArray(data.getString("other"), String.class));
+        this.setOthers((List<String>) data.get("others"));
 
         return 0;
     }
