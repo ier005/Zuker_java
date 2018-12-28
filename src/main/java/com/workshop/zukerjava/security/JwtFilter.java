@@ -2,8 +2,6 @@ package com.workshop.zukerjava.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.servlet.ServletComponentScan;
-import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -16,7 +14,7 @@ import static com.workshop.zukerjava.security.JwtUtils.TOKEN_PARAM_NAME;
 /**
  * Add urlPatterns if other urls need to be filtered.
  */
-@WebFilter(filterName = "jwt_filter", urlPatterns = {"/usercenter/*"})
+@WebFilter(filterName = "jwt_filter", urlPatterns = {"/usercenter/*","/user/update/password"})
 public class JwtFilter implements Filter {
     private Logger log = LoggerFactory.getLogger(this.getClass());
 
@@ -37,7 +35,7 @@ public class JwtFilter implements Filter {
         }
         String userId = JwtUtils.verifyAndGetUserId(jwtToken);
         if (userId == null) {
-            toResponse(servletResponse, 400, "Varify " + TOKEN_PARAM_NAME + " failed.");
+            toResponse(servletResponse, 400, "Verify " + TOKEN_PARAM_NAME + " failed.");
             return;
         }
         ParamHttpServletRequestWrapper pr = new ParamHttpServletRequestWrapper((HttpServletRequest) servletRequest);

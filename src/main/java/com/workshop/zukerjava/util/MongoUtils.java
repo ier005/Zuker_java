@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -41,7 +42,7 @@ public class MongoUtils {
         }
     }
 
-    public static User findUser(String user_id) {
+    public static User findUser(Long user_id) {
         List<User> result = getMongoTemplate().find(new Query(Criteria.where("user_id").is(user_id)), User.class);
         if (result.size() != 1) {
             return null;
@@ -57,7 +58,7 @@ public class MongoUtils {
         return result.get(0);
     }
 
-    public static List<Msg> getMessages(String user_id) {
+    public static List<Msg> getMessages(Long user_id) {
         Criteria criteriaSend = Criteria.where("sender_id").is(user_id);
         Criteria criteriaRecv = Criteria.where("receiver_id").is(user_id);
         return getMongoTemplate().find(
@@ -66,7 +67,7 @@ public class MongoUtils {
         );
     }
 
-    public static List<HousingInfo> getHousingInfoList(String user_id) {
+    public static List<HousingInfo> getHousingInfoList(Long user_id) {
         return getMongoTemplate().find(
                 new Query(Criteria.where("user_id").is(user_id)),
                 HousingInfo.class
@@ -94,7 +95,7 @@ public class MongoUtils {
         return 0;
     }
 
-    public static List<FavoriteInfo> getFavoriteInfoList(String user_id) {
+    public static List<FavoriteInfo> getFavoriteInfoList(Long user_id) {
         return getMongoTemplate().find(
                 new Query(Criteria.where("user_id").is(user_id)),
                 FavoriteInfo.class
@@ -107,35 +108,54 @@ public class MongoUtils {
         return 0;
     }
 
-    public static int updateUser(String user_id, String newUsername, String newEmail) {
-        //TODO
+    public static int updateUser(Long user_id, String newUsername, String newEmail) {
         User user = findUser(user_id);
+        User samename = findUserByName(newUsername);
+        if (samename!=null && !samename.getUser_id().equals(user_id)){
+            return -1;
+        }
         if (user!=null) {
-            user.setUsername(newUsername);
-            user.setEmail(newEmail);
+            Query query = new Query();
+            query.addCriteria(Criteria.where("user_id").is(user_id));
+            Update update = new Update();
+            update.set("username",newUsername);
+            update.set("email",newEmail);
+            getMongoTemplate().updateMulti(query, update,User.class);
             return 1;
         }
+
         return 0;
     }
 
-    public static int updateProfileImage(String user_id, List <String> new_avatar_path){
+    public static int updateProfileImage(Long user_id, List <String> new_avatar_path){
         //TODO
         User user = findUser(user_id);
         if (user!=null){
-            user.setAvatarPath(new_avatar_path);
+            Query query = new Query();
+            query.addCriteria(Criteria.where("user_id").is(user_id));
+            Update update = new Update();
+            update.set("avatar_path",new_avatar_path);
+            getMongoTemplate().updateMulti(query, update,User.class);
             return 1;
         }
         return 0;
     }
 
-    public static int updatePassword(String user_id,String password){
+    public static int updatePassword(Long user_id,String pwd,String newpwd){
         User user = findUser(user_id);
-        if (user!=null){
-            user.setPassword(password);
+
+        if (user!=null && user.getPassword().equals(pwd)){
+            Query query = new Query();
+            query.addCriteria(Criteria.where("user_id").is(user_id));
+            Update update = new Update();
+            update.set("password",newpwd);
+            getMongoTemplate().updateMulti(query, update,User.class);
+
             return 1;
         }
         return 0;
     }
+
     public static int register(User user){
 
         getMongoTemplate().insert(user, "user");
@@ -143,7 +163,7 @@ public class MongoUtils {
         return 1;
     }
 
-    public static int forget(String user_id, String newpassword){
+    public static int forget(Long user_id, String newpassword){
         User user = findUser(user_id);
         if (user!=null){
             user.setPassword(newpassword);

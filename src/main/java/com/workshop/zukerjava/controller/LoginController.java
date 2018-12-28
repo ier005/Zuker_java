@@ -33,7 +33,7 @@ public class LoginController {
         return ret.toJSONString();
     }
 
-    @RequestMapping(value = "/logout", method = RequestMethod.POST)
+    @RequestMapping(value = "/logout", method = RequestMethod.GET)
     public int logout(@RequestParam("user_id") String user_id) {
         //TODO logout
         return 0;
@@ -51,9 +51,10 @@ public class LoginController {
         //String avatarPath = data.get("avatar_Path").toString();
 
         User sameName = MongoUtils.findUserByName(username);
-        User sameEmail = MongoUtils.findUser(email);
-        if (sameName == null && sameEmail == null) {
+        //User sameEmail = MongoUtils.findUser(email);
+        if (sameName == null ) {
             User user = new User();
+            user.setUser_id();
             user.setUsername(username);
             user.setEmail(email);
             user.setPassword(password);
@@ -65,31 +66,35 @@ public class LoginController {
     }
 
     @RequestMapping(value = "/forget", method = RequestMethod.POST)
-    public int forget(@RequestParam("email") String email,
+    public int forget(@RequestBody JSONObject data) {
+                        /* @RequestParam("email") String email,
                         @RequestParam("username") String username,
-                        @RequestParam("new_password") String newpassword) {
-
+                        @RequestParam("new_password") String newpassword) {*/
+        String email = data.get("email").toString();
+        String username = data.get("username").toString();
+        String newpassword = data.get("newpassword").toString();
         User user = MongoUtils.findUserByName(username);
         if (user != null) {
-            user.setPassword(newpassword);
-            return MongoUtils.forget(user.getUser_id(),newpassword);
+            if (MongoUtils.findUserByName(username).getEmail().equals(email) ){
+                return MongoUtils.forget(user.getUser_id(), newpassword);
+            }
+            return 0;
         }
 
         return 0;
     }
 
     @RequestMapping(value = "/update/password", method = RequestMethod.POST)
-    public int updatePassword(@RequestParam("user_id") String user_id,
+    public int updatePassword(@RequestParam("user_id") Long user_id,
+                              @RequestBody JSONObject data) {
+                    /*@RequestParam("user_id") String user_id,
                       @RequestParam("origin_pwd") String pwd,
-                      @RequestParam("new_pwd") String newpwd) {
+                      @RequestParam("new_pwd") String newpwd) {*/
+        //Long user_id = Long.valueOf(String.valueOf(data.get("user_id"))).longValue();
+        String pwd = data.get("origin_pwd").toString();
+        String newpwd= data.get("new_pwd").toString();
+        return MongoUtils.updatePassword(user_id,pwd,newpwd);
 
-        User user = MongoUtils.findUser(user_id);
-        if (user != null && user.getPassword() == pwd) {
-            user.setPassword(newpwd);
-            return MongoUtils.updatePassword(user_id,newpwd);
-        }
-
-        return 0;
     }
 
 }

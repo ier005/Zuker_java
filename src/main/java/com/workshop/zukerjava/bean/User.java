@@ -2,9 +2,11 @@ package com.workshop.zukerjava.bean;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
-import javax.persistence.*;
-import java.util.List;
+
+import javax.persistence.Entity;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * 用户个人信息java bean
@@ -14,9 +16,10 @@ import java.util.ArrayList;
 @Document(collection = "user")
 public class User{
     //user_id
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String user_id;
+    //@Id
+    //@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Field("user_id")
+    private Long user_id;
     //@Indexed(unique = true, direction = IndexDirection.DESCENDING, dropDups = true)
 
     @Field("username")
@@ -33,12 +36,12 @@ public class User{
 
     //@Id
     //@GeneratedValue(strategy= GenerationType.AUTO)
-    public String getUser_id() {
+    public Long getUser_id() {
         return user_id;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setUser_id() {
+        this.user_id = new Random().nextLong();
     }
 
     public String getUsername() {

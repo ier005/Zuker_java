@@ -35,15 +35,15 @@ public class JwtUtils implements CommandLineRunner {
         random.nextBytes(key);
     }
 
-    public static String createToken(String user_id) {
+    public static String createToken(Long user_id) {
         return createToken(user_id, DEFAULT_EXPIRATION);
     }
 
-    public static String createToken(String user_id, long expiration) {
+    public static String createToken(Long user_id, long expiration) {
         return Jwts.builder()
                    .signWith(ALGORITHM, Base64.getEncoder().encode(key))
                    .setIssuer(ISSUER)
-                   .setSubject(user_id)
+                   .setSubject(String.valueOf(user_id))
                    .setIssuedAt(new Date())
                    .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000L))
                    .compact();
