@@ -126,11 +126,9 @@ public class UserCenterController {
         return array.toJSONString();
     }
 
-    @RequestMapping(value = "/housing/edit/{_id}", method = RequestMethod.POST)
-    public int editHousing(@RequestParam("user_id") Long user_id, @PathVariable("_id") String _id,
-                           @RequestParam("data") String data) {
-        HousingInfo housingInfo = (HousingInfo) JSONObject.parse(data);
-        return MongoUtils.editHousingInfo(_id, housingInfo);
+    @RequestMapping(value = "/housing/{_id}", method = RequestMethod.DELETE)
+    public int editHousing(@RequestParam("user_id") Long user_id, @PathVariable("_id") String _id) {
+        return MongoUtils.editHousingInfo(_id);
     }
 
     @RequestMapping(value = "/favorite/list", method = RequestMethod.GET)
@@ -141,7 +139,7 @@ public class UserCenterController {
         return array.toJSONString();
     }
 
-    @RequestMapping(value = "/favorite/remove/{_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/favorite/{_id}", method = RequestMethod.DELETE)
     public int removeFavoriteInfo(@RequestParam("user_id") Long user_id, @PathVariable("_id") String _id) {
         return MongoUtils.removeFavoriteInfo(_id);
     }

@@ -90,8 +90,8 @@ public class MongoUtils {
         return 0;
     }
 
-    public static int editHousingInfo(String _id, HousingInfo housingInfo) {
-        //TODO
+    public static int editHousingInfo(String _id) {
+        getMongoTemplate().remove(new Query(Criteria.where("_id").is(_id)), HousingInfo.class);
         return 0;
     }
 
