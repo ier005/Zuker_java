@@ -63,8 +63,8 @@ public class HousingInfo {
     @Field("bath")
     private String bath;
 
-    @Field("imageUrl")
-    private List<String> imageUrl = new ArrayList<>();
+    @Field("images")
+    private List<String> images = new ArrayList<>();
 
     @Field("others")
     private List<String> others = new ArrayList<>();
@@ -193,12 +193,12 @@ public class HousingInfo {
         this.bath = bath;
     }
 
-    public List<String> getImageUrl() {
-        return imageUrl;
+    public List<String> getImages() {
+        return images;
     }
 
-    public void setImageUrl(List<String> imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setImages(List<String> images) {
+        this.images = images;
     }
 
     public List<String> getOthers() {
@@ -229,6 +229,7 @@ public class HousingInfo {
         this.setName(data.getString("name"));
         this.setPhoneNumber(data.getString("phoneNumber"));
         this.setRoom(data.getString("room"));
+        this.setImages((List<String>) data.get("imageBase64"));
         this.setOthers((List<String>) data.get("others"));
 
         return 0;
